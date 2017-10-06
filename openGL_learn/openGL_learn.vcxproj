@@ -69,13 +69,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\FOX\Source\GLFWlib\glew-2.1.0\include;C:\Users\FOX\Source\GLFWlib\glfw-3.2.1\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;C:\Users\FOX\Source\GLFWlib\GLFW_build\src\Debug\glfw3.lib;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\lib\Release\Win32\glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -111,6 +116,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\engine.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\settings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\headers\engine.h" />
+    <ClInclude Include="..\headers\GLheader.h" />
+    <ClInclude Include="..\headers\settings.h" />
+    <ClInclude Include="..\headers\STD_commons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
