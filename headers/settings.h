@@ -15,10 +15,13 @@ namespace Settings {
 			return file_stream;
 		}
 		uint16_t ReadGLVersion();
-		int ReadWidthHeightTitle(int& _w, int& _h,char**_t);
+		int ReadWidthHeightTitle(int& _w, int& _h, std::string* _t = nullptr);
 
-		int ReadShadersPaths(const char * _shader_name, char **, char **);
+		int ReadShadersPaths(const char * _shader_name, std::string&, std::string&);
 
+		std::string ReadPathToModelFile(const char* _model_name);
+
+		std::string ReadPathToLogsFolder();
 	};
 }
 

@@ -1,18 +1,8 @@
 
+#include "../headers/handler.h"
 
-#include "../headers/engine.h"
 
-int main() {
-			
-	using namespace GLEngine;
-	InitOpenGL();
-
-	
-
-	Engine();
-
-	
-
-	glfwTerminate();
+int main() {	
+	GLEngine::Handler();
 	return 0;
 }

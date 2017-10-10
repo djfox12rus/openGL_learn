@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\FOX\Source\GLFWlib\glew-2.1.0\include;C:\Users\FOX\Source\GLFWlib\glfw-3.2.1\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\FOX\Source\libs\glm;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\src;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\include;C:\Users\FOX\Source\GLFWlib\glfw-3.2.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,7 +79,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Users\FOX\Source\GLFWlib\GLFW_build\src\Debug\glfw3.lib;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\lib\Release\Win32\glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Users\FOX\Source\GLFWlib\GLFW_build\src\Debug\glfw3.lib;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\projects\VC9\Debug\SOIL.lib;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\lib\Release\Win32\glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,13 +116,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\engine.cpp" />
+    <ClCompile Include="..\src\callbacks.cpp" />
+    <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\GLClasses.cpp" />
+    <ClCompile Include="..\src\handler.cpp" />
+    <ClCompile Include="..\src\logs.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\models.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\headers\engine.h" />
-    <ClInclude Include="..\headers\GLheader.h" />
+    <ClInclude Include="..\headers\callbacks.h" />
+    <ClInclude Include="..\headers\camera.h" />
+    <ClInclude Include="..\headers\GLClasses.h" />
+    <ClInclude Include="..\headers\handler.h" />
+    <ClInclude Include="..\headers\logs.h" />
+    <ClInclude Include="..\headers\models.h" />
+    <ClInclude Include="..\headers\OpenGLheader.h" />
     <ClInclude Include="..\headers\settings.h" />
     <ClInclude Include="..\headers\STD_commons.h" />
   </ItemGroup>

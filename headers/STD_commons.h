@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include <stdint.h>
+#include <ctime>
+#include<time.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 

@@ -7,54 +7,56 @@ Settings::SettingsFileHandler::SettingsFileHandler() :file_stream() {
 
 Settings::SettingsFileHandler::~SettingsFileHandler()
 {
-	file_stream.close();
+	if (file_stream.is_open())
+		file_stream.close();
 }
 
 uint16_t Settings::SettingsFileHandler::ReadGLVersion()
 {
 	if (!file_stream.is_open())
-		return 330;
-
-	file_stream.seekg(file_stream.beg);
-	char line[100];
+		return 330;	
+	std::string str;
 	bool found = false;
 	while (!file_stream.eof()) {
-		file_stream.getline(line, 100);
-		if (!strcmp(line, "[GLVersion]")) {
-			file_stream.getline(line, 100);
+		file_stream >> str;
+		if (!str.compare("[GLVersion]")) {
+			file_stream >> str;			
 			found = true;
 			break;
 		}
 	}
 	if (found) {
-		uint16_t out = strtoul(line, nullptr, 0);
+		uint16_t out = strtoul(str.c_str(), nullptr, 0);
 		return out;
 	}
 	return 330;
 }
 
-int Settings::SettingsFileHandler::ReadWidthHeightTitle(int & _w, int & _h, char**_t)
+int Settings::SettingsFileHandler::ReadWidthHeightTitle(int & _w, int & _h, std::string* _t)
 {
 	if (!file_stream.is_open())
 		return -1;
-	char line[100];
+	
+	std::string str;
 	bool found = false;
 	char* eq;
 	while (!file_stream.eof()) {
-		file_stream.getline(line, 100);
-		if (!strcmp(line,"[Window]")) {
-			file_stream.getline(line, 100);
-			eq = strrchr(line, '=');
+		file_stream >> str;
+		if (!str.compare("[Window]")) {
+			file_stream >> str;	
+			eq = &str[str.find("=")];
 			eq++;
 			_w = strtoul(eq, &eq, 0);		
-			file_stream.getline(line, 100);
-			eq = strrchr(line, '=');
+			file_stream >> str;
+			eq = &str[str.find("=")];
 			eq++;
 			_h = strtoul(eq, &eq, 0);
-			file_stream.getline(line, 100);
-			eq = strrchr(line, '=');
-			eq++;
-			strcpy_s(*_t,100, eq);			
+			if (_t != nullptr) {
+				file_stream >> str;
+				eq = &str[str.find("=")];
+				eq++;
+				_t->assign(eq);				
+			}
 			found = true;
 			break;
 		}
@@ -63,21 +65,64 @@ int Settings::SettingsFileHandler::ReadWidthHeightTitle(int & _w, int & _h, char
 	return 0;
 }
 
-int Settings::SettingsFileHandler::ReadShadersPaths(const char * _shader_name, char **_vertexPath, char **_fragmentPath)
+int Settings::SettingsFileHandler::ReadShadersPaths(const char * _shader_name, std::string &_vertexPath, std::string &_fragmentPath)
 {
 	if (!file_stream.is_open())
-		return -1;
-	char line[100];
+		return -1;	
 	bool found = false;
+	std::string str;
 	while (!file_stream.eof()) {
-		file_stream.getline(line, 100);
-		if (!strcmp(line, _shader_name)) {
-			file_stream.getline(*_vertexPath, 100);
-			file_stream.getline(*_fragmentPath, 100);
+		
+		file_stream >> str;
+		if (!str.compare(_shader_name)) {
+			file_stream >> _vertexPath;
+			file_stream >> _fragmentPath;			
 			found = true;
 			break;
 		}
 	}
 	if (!found)return -1;
 	return 0;
+}
+
+std::string Settings::SettingsFileHandler::ReadPathToModelFile(const char * _model_name)
+{
+
+	if (!file_stream.is_open())
+		return std::string();
+	bool found = false;
+	std::string str;
+	while (!file_stream.eof()) {
+		file_stream >> str;
+		if (!str.compare(_model_name)) {
+			file_stream >> str;
+			found = true;
+			break;
+		}
+	}
+	if (found) {
+		return str;
+	}
+	return std::string();
+}
+
+std::string Settings::SettingsFileHandler::ReadPathToLogsFolder()
+{
+	if (!file_stream.is_open())
+		return std::string();
+	bool found = false;
+	std::string str;
+	while (!file_stream.eof()) {
+		file_stream >> str;	
+		if (!str.compare("[LogsPath]")) {			
+			file_stream >> str;
+			found = true;
+			break;
+		}
+	}
+	if (found) {		
+		return str;
+		
+	}
+	return std::string();
 }
