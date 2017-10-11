@@ -66,7 +66,7 @@ int GLEngine::Main_loop()
 	glm::vec3 lampPositions = glm::vec3(2.5f, 1.0f, -3.0f);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+	
 	
 	glm::mat4 model;
 
@@ -140,6 +140,7 @@ int GLEngine::Main_loop()
 			viewLoc = glGetUniformLocation(lampShader.program, "view");
 			projLoc = glGetUniformLocation(lampShader.program, "projection");
 			modelColor = glGetUniformLocation(lampShader.program, "modelColor");
+
 			glUniform3f(modelColor, lamp.color.r, lamp.color.g, lamp.color.b);
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -153,7 +154,7 @@ int GLEngine::Main_loop()
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			
+			lampPositions = glm::vec3(2.0f*glm::sin(deltaTime().lastFrame), 1.0f, -4.0f -2.0f*glm::cos(deltaTime().lastFrame));
 			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 

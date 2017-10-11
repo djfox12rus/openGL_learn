@@ -3,26 +3,39 @@
 #define MODELS_H
 #include "OpenGLheader.h"
 namespace GLEngine {
-
-	class __model
-	{	
+	
+	class __shape {
 	private:
-		int ParseModelFile(std::string&);
-		void AttachTexture(std::string&);
+		int ParseModelFile(std::string&);		
 		size_t size;
 		bool textureEnable;
 		bool normalsEnable;
-	public:		
+	public:
 		GLuint VAO;
 		GLuint VBO;
-		GLuint EBO;
+
+		__shape();
+		__shape(const char*);
+		__shape(size_t _s, bool _textureEnable, bool _normalsEnable, GLuint _VAO, GLuint _VBO);
+		__shape(__shape&);
+		~__shape();
+
+	};
+
+
+	class __model
+	{	
+	private:		
+		__shape* shapes;
+		
+	public:		
+		void SetTexture(const char *);
 		GLuint texture;
 		glm::vec3 color;
 		
 
-		__model();
-		__model(const char*);
-		__model(size_t _s, bool _textureEnable, bool _normalsEnable, GLuint _VAO, GLuint _VBO, GLuint _EBO, GLuint _texture, glm::vec3 _color);
+		__model();		
+		__model(__shape*, GLuint  _texture = 0, glm::vec3  _color = glm::vec3());
 		~__model();
 	};
 

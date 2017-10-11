@@ -19,7 +19,7 @@ namespace Settings {
 
 		int ReadShadersPaths(const char * _shader_name, std::string&, std::string&);
 
-		std::string ReadPathToModelFile(const char* _model_name);
+		std::string ReadPathTo(const char* _model_name);
 
 		std::string ReadPathToLogsFolder();
 	};

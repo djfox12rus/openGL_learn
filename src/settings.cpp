@@ -85,7 +85,7 @@ int Settings::SettingsFileHandler::ReadShadersPaths(const char * _shader_name, s
 	return 0;
 }
 
-std::string Settings::SettingsFileHandler::ReadPathToModelFile(const char * _model_name)
+std::string Settings::SettingsFileHandler::ReadPathTo(const char * _model_name)
 {
 
 	if (!file_stream.is_open())

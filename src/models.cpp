@@ -1,6 +1,6 @@
 #include "../headers/models.h"
 
-int GLEngine::__model::ParseModelFile(std::string &_path)
+int GLEngine::__shape::ParseModelFile(std::string &_path)
 {
 	std::ifstream model_file_stream;
 	model_file_stream.open(_path, std::fstream::in);
@@ -21,17 +21,6 @@ int GLEngine::__model::ParseModelFile(std::string &_path)
 			this->textureEnable = strtoul(ptr, &ptr, 0);
 			break;
 		}
-		else if (!in_str.compare("[Color]")) {
-			model_file_stream >> in_str;
-			ptr = &in_str[0];
-			color.r = strtod(ptr, &ptr);
-			model_file_stream >> in_str;
-			ptr = &in_str[0];
-			color.g = strtod(ptr, &ptr);
-			model_file_stream >> in_str;
-			ptr = &in_str[0];
-			color.b = strtod(ptr, &ptr);
-		}
 		else if (!in_str.compare("[Normals]")) {
 			model_file_stream >> in_str;
 			ptr = &in_str[in_str.find("=")];
@@ -48,12 +37,6 @@ int GLEngine::__model::ParseModelFile(std::string &_path)
 	uint32_t fives = 0;
 
 	model_file_stream >> in_str;
-	if (this->textureEnable) {
-		ptr = &in_str[in_str.find("=")];
-		ptr++;
-		texPath.assign(ptr);
-		this->AttachTexture(texPath);
-	}
 
 	while (!model_file_stream.eof()) {
 		model_file_stream >> in_str;
@@ -85,7 +68,7 @@ int GLEngine::__model::ParseModelFile(std::string &_path)
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);		
+		glEnableVertexAttribArray(1);
 	}
 	else if (!this->textureEnable && this->normalsEnable) {
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
@@ -111,8 +94,52 @@ int GLEngine::__model::ParseModelFile(std::string &_path)
 	return 0;
 }
 
-void GLEngine::__model::AttachTexture(std::string& _texPath)
+GLEngine::__shape::__shape() : size(), textureEnable(), normalsEnable(), VAO(), VBO()
 {
+}
+
+GLEngine::__shape::__shape(const char *_shapename) : size(), textureEnable(), normalsEnable(), VAO(), VBO()
+{
+	Settings::SettingsFileHandler fs;
+	std::string path = fs.ReadPathTo(_shapename);
+	if (!path.empty()) {
+		if (ParseModelFile(path)) {
+			if (LOGS::CAN_LOG())
+				LOGS::LOG_STREAM() << "ERROR::MODEL::Could not parse shape file." << std::endl;
+		}
+	}
+	else {
+		if (LOGS::CAN_LOG())
+			LOGS::LOG_STREAM() << "ERROR::MODEL::Could not read path to shape." << std::endl;
+	}
+}
+
+GLEngine::__shape::__shape(size_t _s, bool _textureEnable, bool _normalsEnable, GLuint _VAO, GLuint _VBO) : size(_s), textureEnable(_textureEnable), normalsEnable(_normalsEnable), VAO(_VAO), VBO(_VBO)
+{
+}
+
+GLEngine::__shape::__shape(__shape &)
+{
+}
+
+GLEngine::__shape::~__shape()
+{
+	if (this->VAO)
+		glDeleteVertexArrays(1, &this->VAO);
+	if (this->VBO)
+		glDeleteBuffers(1, &this->VBO);
+}
+
+void GLEngine::__model::SetTexture(const char * _texName)
+{
+	Settings::SettingsFileHandler fs;
+	std::string path = fs.ReadPathTo(_texName);
+	if (path.empty()) {
+		if (LOGS::CAN_LOG())
+			LOGS::LOG_STREAM() << "ERROR::MODEL::Could not attach texture." << std::endl;
+		return;
+	}
+
 	glGenTextures(1, &this->texture);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
@@ -123,44 +150,26 @@ void GLEngine::__model::AttachTexture(std::string& _texPath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	int width, height;
-	unsigned char* texture_image = SOIL_load_image(_texPath.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+	unsigned char* texture_image = SOIL_load_image(path.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(texture_image);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-GLEngine::__model::__model() :size(), textureEnable(), normalsEnable(), VAO(), VBO(), EBO(), texture(), color()
+
+
+GLEngine::__model::__model() :shapes(), texture(), color()
 {
 }
 
-GLEngine::__model::__model(const char *_modelname) : size(), textureEnable(), normalsEnable(), VAO(), VBO(), EBO(), texture(), color()
-{
-	Settings::SettingsFileHandler fs;
-	std::string path = fs.ReadPathToModelFile(_modelname);
-	if (!path.empty()) {
-		if (ParseModelFile(path)) {
-			if (LOGS::CAN_LOG())
-				LOGS::LOG_STREAM() << "ERROR::MODEL::Could not parse model file." << std::endl;
-		}
-	}
-	else {
-		if (LOGS::CAN_LOG())
-			LOGS::LOG_STREAM() << "ERROR::MODEL::Could not read path to models." << std::endl;
-	}
-}
 
-GLEngine::__model::__model(size_t _s, bool _textureEnable, bool _normalsEnable, GLuint _VAO, GLuint _VBO, GLuint _EBO, GLuint _texture, glm::vec3 _color) : size(_s), textureEnable(_textureEnable), normalsEnable(_normalsEnable), VAO(_VAO), VBO(_VBO), EBO(_EBO), texture(_texture), color(_color)
+GLEngine::__model::__model(__shape* _sh, GLuint _texture, glm::vec3 _color) : shapes(_sh), texture(_texture), color(_color)
 {
 }
 
 
 GLEngine::__model::~__model()
 {
-	if (this->VAO)
-		glDeleteVertexArrays(1, &this->VAO);
-	if (this->VBO)
-		glDeleteBuffers(1, &this->VBO);
-	if (this->EBO)
-		glDeleteBuffers(1, &this->EBO);
 }
+
