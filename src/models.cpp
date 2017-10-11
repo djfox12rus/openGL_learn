@@ -36,7 +36,7 @@ int GLEngine::__shape::ParseModelFile(std::string &_path)
 	size_t count = 0;
 	uint32_t fives = 0;
 
-	model_file_stream >> in_str;
+	
 
 	while (!model_file_stream.eof()) {
 		model_file_stream >> in_str;
@@ -132,17 +132,59 @@ GLEngine::__shape::~__shape()
 
 void GLEngine::__model::SetTexture(const char * _texName)
 {
+	this->texture = createTexture(_texName);
+}
+
+
+
+GLEngine::__model::__model() :shapes(), texture(), color()
+{
+}
+
+
+GLEngine::__model::__model(__shape* _sh, glm::vec3 _color, glm::vec3 _position, textureAtrib _texture ) : shapes(_sh), texture(_texture), color(_color),position(_position)
+{
+}
+
+
+GLEngine::__model::~__model()
+{
+}
+
+GLuint GLEngine::__model::VAO()
+{
+	return shapes->VAO;
+}
+
+GLuint GLEngine::__model::VBO()
+{
+	return shapes->VBO;
+}
+
+GLEngine::textureAtrib GLEngine::__model::Texture()
+{
+	return texture;
+}
+
+GLEngine::textureAtrib GLEngine::createTexture(const char *_texName)
+{
 	Settings::SettingsFileHandler fs;
 	std::string path = fs.ReadPathTo(_texName);
 	if (path.empty()) {
 		if (LOGS::CAN_LOG())
 			LOGS::LOG_STREAM() << "ERROR::MODEL::Could not attach texture." << std::endl;
-		return;
+		return textureAtrib();
+	}
+	textureAtrib out;
+	out.GL_sampler = GL_TEXTURE0;
+	while (texIndices()[out.GL_sampler]&& out.GL_sampler <= GL_TEXTURE31) {
+		out.GL_sampler++;
 	}
 
-	glGenTextures(1, &this->texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
+	texIndices()[out.GL_sampler] = true;
+	glGenTextures(1, &out.texture);
+	glActiveTexture(out.GL_sampler);
+	glBindTexture(GL_TEXTURE_2D, out.texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -155,21 +197,6 @@ void GLEngine::__model::SetTexture(const char * _texName)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(texture_image);
 	glBindTexture(GL_TEXTURE_2D, 0);
+		
+	return out;
 }
-
-
-
-GLEngine::__model::__model() :shapes(), texture(), color()
-{
-}
-
-
-GLEngine::__model::__model(__shape* _sh, GLuint _texture, glm::vec3 _color) : shapes(_sh), texture(_texture), color(_color)
-{
-}
-
-
-GLEngine::__model::~__model()
-{
-}
-

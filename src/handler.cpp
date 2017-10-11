@@ -59,28 +59,25 @@ int GLEngine::Main_loop()
 	Shader lightingShader = Shader("[ModelShader]");
 	Shader lampShader = Shader("[LampShader]");
 
-	__model crate = __model("[CratesModel]");
-	__model lamp = __model("[LightModel]");
-		
-	glm::vec3 cubePositions = glm::vec3(0.0f, 0.0f, -4.0f);
-	glm::vec3 lampPositions = glm::vec3(2.5f, 1.0f, -3.0f);
+	__shape cube = __shape("[ShapeCube]");
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
+	__model crate = __model(&cube,glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.0f, 0.0f, -4.0f));
+	__model lamp = __model(&cube, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.5f, 0.0f, -3.0f));
+			
+	crate.SetTexture("[CrateTexture]");
 	
 	glm::mat4 model;
 
 	glm::mat4 view;
 
 	glm::mat4 projection;
+
+	textureAtrib specMap = createTexture("[SpecMap]");
 	
-	GLint modelLoc;
-	GLint viewLoc;
-	GLint projLoc;
-	GLint modelColor;
-	GLint lightColorLoc;
-	GLint lightPosLoc;
-	GLint viewPosLoc;
+	Material mater = Material(glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.5f, 0.5f, 0.5f), 32.0f);
+	Light light = Light(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	glm::vec3 lightColor;
 	//trans = projection*view*model;
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(Window()))
@@ -103,58 +100,58 @@ int GLEngine::Main_loop()
 			projection = glm::perspective(glm::radians(Camera().Zoom), Screen().AspectRatio, 0.1f, 100.0f);
 
 			lightingShader.Use();
-
-			modelLoc = glGetUniformLocation(lightingShader.program, "model");
-			viewLoc = glGetUniformLocation(lightingShader.program, "view");
-			projLoc = glGetUniformLocation(lightingShader.program, "projection");
-
-
+			
 			/*glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, crate.texture);*/
 
-
-			modelColor = glGetUniformLocation(lightingShader.program, "modelColor");
-			glUniform3f(modelColor, crate.color.r, crate.color.g, crate.color.b);
-			lightColorLoc = glGetUniformLocation(lightingShader.program, "lightColor");
-			glUniform3f(lightColorLoc, lamp.color.r, lamp.color.g, lamp.color.b);
 					
-			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-			glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+			lightingShader.setMat4("view", view);
+			lightingShader.setMat4("projection", projection);			
 			
-			lightPosLoc = glGetUniformLocation(lightingShader.program, "lightPos");
-			glUniform3f(lightPosLoc, lampPositions.x, lampPositions.y, lampPositions.z);
+			lightingShader.setVec3("viewPos", Camera().Position);
 
-			viewPosLoc = glGetUniformLocation(lightingShader.program, "viewPos");
-			glUniform3f(viewPosLoc, Camera().Position.x, Camera().Position.y, Camera().Position.z);
+			lightingShader.setVec3("material.ambient", mater.ambient);
+			lightingShader.setInt("material.diffuse", 0);
+			lightingShader.setInt("material.specular", 1);
+			lightingShader.setFloat("material.shininess", mater.shininess);
 
-			glBindVertexArray(crate.VAO);			
+			lightingShader.setVec3("light.position", lamp.position);
+			lightingShader.setVec3("light.ambient", light.ambient);
+			lightingShader.setVec3("light.diffuse", light.diffuse);
+			lightingShader.setVec3("light.specular", light.specular);
+
+			glActiveTexture(crate.Texture().GL_sampler);
+			glBindTexture(GL_TEXTURE_2D, crate.Texture().texture);
+
+
+			glActiveTexture(specMap.GL_sampler);
+			glBindTexture(GL_TEXTURE_2D, specMap.texture);
+
+			glBindVertexArray(crate.VAO());			
 			model = glm::mat4();
-			model = glm::translate(model, cubePositions);
-			model = model* RotatingCube();					
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			model = glm::translate(model, crate.position);
+			model = model* RotatingCube();			
+			lightingShader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			glBindVertexArray(0);
 
-			lampShader.Use();
-			modelLoc = glGetUniformLocation(lampShader.program, "model");
-			viewLoc = glGetUniformLocation(lampShader.program, "view");
-			projLoc = glGetUniformLocation(lampShader.program, "projection");
-			modelColor = glGetUniformLocation(lampShader.program, "modelColor");
+			lampShader.Use();			
 
-			glUniform3f(modelColor, lamp.color.r, lamp.color.g, lamp.color.b);
-			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-			glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+			lampShader.setVec3("modelColor", lamp.color);
+			lampShader.setMat4("view", view);
+			lampShader.setMat4("projection", projection);		
 
-			glBindVertexArray(lamp.VAO);
+			glBindVertexArray(lamp.VAO());
 
 			model = glm::mat4();
-			model = glm::translate(model, lampPositions);			
+			model = glm::translate(model, lamp.position);			
 			model = glm::scale(model, glm::vec3(0.2f));
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			lampShader.setMat4("model", model);
+			
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			lampPositions = glm::vec3(2.0f*glm::sin(deltaTime().lastFrame), 1.0f, -4.0f -2.0f*glm::cos(deltaTime().lastFrame));
+			lamp.position = glm::vec3(2.0f*glm::sin(deltaTime().lastFrame), 0.0f, -4.0f -2.0f*glm::cos(deltaTime().lastFrame));
 			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 

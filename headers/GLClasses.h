@@ -55,8 +55,15 @@ namespace GLEngine {
 	public:		
 		GLuint program;
 		Shader(const char* _shader_name);
-		void Use();
 		~Shader();
+		void Use();
+		void setBool(const std::string &name, bool value) const;
+		void setInt(const std::string &name, int value) const;
+		void setFloat(const std::string &name, float value) const;
+		void setVec3(const std::string &name, glm::vec3& value) const;
+		void setMat4(const std::string &name, glm::mat4& value, GLsizei count = 1, GLboolean transpose = GL_FALSE) const;
+
+		
 	};
 
 	struct __mouse_pos {
@@ -96,6 +103,21 @@ namespace GLEngine {
 		static __rotation r;
 		return r;
 	}
+
+	struct Material {
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		float shininess;
+		Material(glm::vec3&, glm::vec3&, glm::vec3&,float);
+	};
+
+	struct Light {		
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		Light(glm::vec3&, glm::vec3&, glm::vec3&);
+	};
 }
 
 #endif //!GLCLASSES_H

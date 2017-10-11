@@ -3,6 +3,31 @@
 #define MODELS_H
 #include "OpenGLheader.h"
 namespace GLEngine {
+
+	struct textureAtrib {
+		GLuint texture;
+		GLuint GL_sampler;
+	};
+
+	textureAtrib createTexture(const char *);
+	struct _tex {
+		bool textureIdices[32];
+
+		bool& operator[](int _pos) {
+			return textureIdices[_pos - GL_TEXTURE0];
+		}
+		_tex() {
+			for (int i = 0; i < 32; i++)textureIdices[i] = false;
+		}
+	};
+
+	inline _tex& texIndices() {
+		static _tex var;
+		return var;
+	}
+
+	
+
 	
 	class __shape {
 	private:
@@ -27,16 +52,21 @@ namespace GLEngine {
 	{	
 	private:		
 		__shape* shapes;
-		
+		textureAtrib texture;
 	public:		
 		void SetTexture(const char *);
-		GLuint texture;
-		glm::vec3 color;
 		
+		glm::vec3 color;
+		glm::vec3 position;
 
 		__model();		
-		__model(__shape*, GLuint  _texture = 0, glm::vec3  _color = glm::vec3());
+		__model(__shape*,  glm::vec3  _color = glm::vec3(), glm::vec3 _position = glm::vec3(), textureAtrib  _texture = textureAtrib());
 		~__model();
+
+		GLuint VAO();
+		GLuint VBO();
+		textureAtrib Texture();
+		
 	};
 
 

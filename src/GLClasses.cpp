@@ -182,6 +182,31 @@ void GLEngine::Shader::Use()
 	glUseProgram(this->program);
 }
 
+void GLEngine::Shader::setBool(const std::string & name, bool value) const
+{
+	glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
+}
+
+void GLEngine::Shader::setInt(const std::string & name, int value) const
+{
+	glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void GLEngine::Shader::setFloat(const std::string & name, float value) const
+{
+	glUniform1f(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void GLEngine::Shader::setVec3(const std::string & name, glm::vec3& value) const
+{
+	glUniform3f(glGetUniformLocation(program, name.c_str()), value.x, value.y,value.z);
+}
+
+void GLEngine::Shader::setMat4(const std::string & name, glm::mat4 & value, GLsizei count, GLboolean transpose) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), count, transpose, glm::value_ptr(value));
+}
+
 GLEngine::Shader::~Shader()
 {
 }
@@ -221,4 +246,12 @@ GLEngine::__screen::__screen() : Width(), Height(), AspectRatio()
 
 GLEngine::__screen::__screen(GLuint _w, GLuint _h): Width(_w), Height(_h), AspectRatio((GLfloat)_w/(GLfloat)_h)
 {	
+}
+
+GLEngine::Material::Material(glm::vec3 &_amb, glm::vec3 &_diff, glm::vec3 &_spec, float _shiny): ambient(_amb), diffuse(_diff), specular(_spec), shininess(_shiny)
+{
+}
+
+GLEngine::Light::Light(glm::vec3 &_amb, glm::vec3 &_diff, glm::vec3 &_spec): ambient(_amb), diffuse(_diff), specular(_spec)
+{
 }
