@@ -30,31 +30,72 @@ int GLEngine::__shape::ParseModelFile(std::string &_path)
 	}
 	size_t length = this->size*(3 + this->textureEnable * 2 + this->normalsEnable * 3);
 	GLfloat *vertices = new GLfloat[length];
+	//GLfloat  vertices[36 * 6];
 
 	std::string texPath;
-	bool flag = false;
+	//bool flag = false;
 	size_t count = 0;
-	uint32_t fives = 0;
+	uint32_t triangle_flag = 0;
+	uint32_t vertex_flag = 0;
 
-	
+	glm::vec3 vector1;
+	glm::vec3 vector2;
+	glm::vec3 normal;
+
+	while (in_str.compare("[Vertices]")) {
+		model_file_stream >> in_str;
+	}
 
 	while (!model_file_stream.eof()) {
-		model_file_stream >> in_str;
-
-		if (flag) {
-			if (fives < (3 + this->textureEnable * 2 + this->normalsEnable * 3))
+		if (this->normalsEnable) {
+			if (vertex_flag < 3)
 			{
+				model_file_stream >> in_str;
 				ptr = &in_str[0];
 				vertices[count] = strtod(ptr, &ptr);
-				count++;
+
 			}
-			fives++;
-			if (fives >= 8) fives = 0;
+			count++;
+			vertex_flag++;
+			if (vertex_flag == 6) vertex_flag = 0;
 		}
-		if (!in_str.compare("[Vertices]")) {
-			flag = true;
+		else {
+			model_file_stream >> in_str;
+			ptr = &in_str[0];
+			vertices[count] = strtod(ptr, &ptr);
+			count++;
+		}
+			
+	}
+	if (this->normalsEnable)
+	for (count = 0; count < length; count += 18) {
+		vector1 = glm::vec3(vertices[count + 6] - vertices[count], vertices[count + 6 + 1] - vertices[count + 1], vertices[count + 6 + 2] - vertices[count + 2]);
+		vector2 = glm::vec3(vertices[count + 12] - vertices[count], vertices[count + 12 + 1] - vertices[count + 1], vertices[count + 12 + 2] - vertices[count + 2]);
+		normal = glm::normalize(glm::cross(vector1, vector2));
+		vertices[count + 3] = normal.x;
+		vertices[count + 4] = normal.y;
+		vertices[count + 5] = normal.z;
+
+		vertices[count + 9] = normal.x;
+		vertices[count + 10] = normal.y;
+		vertices[count + 11] = normal.z;
+
+		vertices[count + 15] = normal.x;
+		vertices[count + 16] = normal.y;
+		vertices[count + 17] = normal.z;
+	}
+
+
+
+	if (LOGS::CAN_LOG()) {
+		for (int i = 0; i < length; i+=6) {
+			for (int j = i; j<6+i;j++)
+				LOGS::LOG_STREAM() << vertices[j]<<"\t";
+			LOGS::LOG_STREAM() << std::endl;
 		}
 	}
+		
+
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	glBindVertexArray(this->VAO);
@@ -90,7 +131,7 @@ int GLEngine::__shape::ParseModelFile(std::string &_path)
 	}
 	glBindVertexArray(0);
 
-	delete[]vertices;
+	//delete[]vertices;
 	return 0;
 }
 
@@ -142,13 +183,18 @@ GLEngine::__model::__model() :shapes(), texture(), color()
 }
 
 
-GLEngine::__model::__model(__shape* _sh, glm::vec3 _color, glm::vec3 _position, textureAtrib _texture ) : shapes(_sh), texture(_texture), color(_color),position(_position)
+GLEngine::__model::__model(__shape* _sh, glm::vec3 _color, glm::vec3 _position, textureAtrib _texture) : shapes(_sh), texture(_texture), color(_color), position(_position)
 {
 }
 
 
 GLEngine::__model::~__model()
 {
+}
+
+size_t GLEngine::__model::VerticesNum()
+{
+	return shapes->size;
 }
 
 GLuint GLEngine::__model::VAO()
@@ -177,7 +223,7 @@ GLEngine::textureAtrib GLEngine::createTexture(const char *_texName)
 	}
 	textureAtrib out;
 	out.GL_sampler = GL_TEXTURE0;
-	while (texIndices()[out.GL_sampler]&& out.GL_sampler <= GL_TEXTURE31) {
+	while (texIndices()[out.GL_sampler] && out.GL_sampler <= GL_TEXTURE31) {
 		out.GL_sampler++;
 	}
 
@@ -197,6 +243,6 @@ GLEngine::textureAtrib GLEngine::createTexture(const char *_texName)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(texture_image);
 	glBindTexture(GL_TEXTURE_2D, 0);
-		
+
 	return out;
 }

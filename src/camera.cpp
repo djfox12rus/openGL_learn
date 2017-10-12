@@ -63,6 +63,11 @@ void GLEngine::__camera::ProcessKeyboard(Camera_Movement _direction, GLfloat _de
 		this->Position -= this->Right * velocity;
 	if (_direction == RIGHT)
 		this->Position += this->Right * velocity;
+	if (_direction == UP)
+		this->Position += this->Up * velocity;
+	if (_direction == DOWN)
+		this->Position -= this->Up * velocity;
+
 }
 
 void GLEngine::__camera::ProcessMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLboolean _constrainPitch)

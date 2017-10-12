@@ -59,7 +59,7 @@ int GLEngine::Main_loop()
 	Shader lightingShader = Shader("[ModelShader]");
 	Shader lampShader = Shader("[LampShader]");
 
-	__shape cube = __shape("[ShapeCube]");
+	__shape cube = __shape("[ShapeSphere]");
 
 	__model crate = __model(&cube,glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.0f, 0.0f, -4.0f));
 	__model lamp = __model(&cube, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.5f, 0.0f, -3.0f));
@@ -79,7 +79,7 @@ int GLEngine::Main_loop()
 
 	glm::vec3 lightColor;
 	//trans = projection*view*model;
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);	
 	while (!glfwWindowShouldClose(Window()))
 	{
 		deltaTime().setDelta();
@@ -132,7 +132,7 @@ int GLEngine::Main_loop()
 			model = glm::translate(model, crate.position);
 			model = model* RotatingCube();			
 			lightingShader.setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, crate.VerticesNum());
 			glBindVertexArray(0);
 
 			lampShader.Use();			
@@ -149,9 +149,11 @@ int GLEngine::Main_loop()
 			lampShader.setMat4("model", model);
 			
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, lamp.VerticesNum());
 
 			lamp.position = glm::vec3(2.0f*glm::sin(deltaTime().lastFrame), 0.0f, -4.0f -2.0f*glm::cos(deltaTime().lastFrame));
+			
+
 			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 

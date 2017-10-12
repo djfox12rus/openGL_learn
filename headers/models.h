@@ -31,6 +31,7 @@ namespace GLEngine {
 	
 	class __shape {
 	private:
+		friend class __model;
 		int ParseModelFile(std::string&);		
 		size_t size;
 		bool textureEnable;
@@ -63,6 +64,7 @@ namespace GLEngine {
 		__model(__shape*,  glm::vec3  _color = glm::vec3(), glm::vec3 _position = glm::vec3(), textureAtrib  _texture = textureAtrib());
 		~__model();
 
+		size_t VerticesNum();
 		GLuint VAO();
 		GLuint VBO();
 		textureAtrib Texture();

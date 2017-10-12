@@ -46,6 +46,11 @@ void GLEngine::do_movement()
 		Camera().ProcessKeyboard(LEFT, deltaTime());
 	if (keys()[GLFW_KEY_D])
 		Camera().ProcessKeyboard(RIGHT, deltaTime());
+	if (keys()[GLFW_KEY_LEFT_SHIFT])
+		Camera().ProcessKeyboard(UP, deltaTime());
+	if (keys()[GLFW_KEY_LEFT_CONTROL])
+		Camera().ProcessKeyboard(DOWN, deltaTime());
+
 }
 
 void GLEngine::do_rotation()
@@ -88,9 +93,7 @@ void GLEngine::do_rotation()
 			rotation_around().z = M_PI * 2 - M_PI / step;
 	}
 	if (keys()[GLFW_KEY_RIGHT_CONTROL]) {
-		rotation_around().z = 0;
-		rotation_around().z = 0;
-		rotation_around().z = 0;
+		rotation_around() = __rotation();		
 	}
 	if (keys()[GLFW_KEY_RIGHT_SHIFT]) {
 		default_pos() = true;
