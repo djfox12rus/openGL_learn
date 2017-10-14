@@ -124,6 +124,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\models.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
+    <ClCompile Include="..\src\test_vec_mat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\headers\callbacks.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="..\headers\OpenGLheader.h" />
     <ClInclude Include="..\headers\settings.h" />
     <ClInclude Include="..\headers\STD_commons.h" />
+    <ClInclude Include="..\headers\test_vec_mat.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

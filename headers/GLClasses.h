@@ -61,6 +61,8 @@ namespace GLEngine {
 		void setInt(const std::string &name, int value) const;
 		void setFloat(const std::string &name, float value) const;
 		void setVec3(const std::string &name, glm::vec3& value) const;
+		void setVec4(const std::string &name, glm::vec4& value) const;
+		void setMat3(const std::string &name, glm::mat3& value, GLsizei count = 1, GLboolean transpose = GL_FALSE) const;
 		void setMat4(const std::string &name, glm::mat4& value, GLsizei count = 1, GLboolean transpose = GL_FALSE) const;
 
 		
@@ -116,7 +118,15 @@ namespace GLEngine {
 		glm::vec3 ambient;
 		glm::vec3 diffuse;
 		glm::vec3 specular;
-		Light(glm::vec3&, glm::vec3&, glm::vec3&);
+
+		float constant;
+		float linear;
+		float quadratic;
+
+		float cutOff;
+		float outerCutOff;
+		Light(glm::vec3&_amb, glm::vec3&_diff, glm::vec3&_spec);
+		Light(glm::vec3&_amb, glm::vec3&_diff, glm::vec3&_spec, float _linear, float _quadratic, float _cutOff, float _outerCutOff, float _constant = 1.0);
 	};
 }
 

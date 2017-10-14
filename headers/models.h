@@ -56,12 +56,12 @@ namespace GLEngine {
 		textureAtrib texture;
 	public:		
 		void SetTexture(const char *);
-		
-		glm::vec3 color;
 		glm::vec3 position;
+		glm::vec3 color;
+		
 
 		__model();		
-		__model(__shape*,  glm::vec3  _color = glm::vec3(), glm::vec3 _position = glm::vec3(), textureAtrib  _texture = textureAtrib());
+		__model(__shape*,  glm::vec3 _position = glm::vec3(), glm::vec3  _color = glm::vec3(), textureAtrib  _texture = textureAtrib());
 		~__model();
 
 		size_t VerticesNum();

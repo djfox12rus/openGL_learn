@@ -28,11 +28,14 @@ int GLEngine::__shape::ParseModelFile(std::string &_path)
 			this->normalsEnable = strtoul(ptr, &ptr, 0);
 		}
 	}
-	size_t length = this->size*(3 + this->textureEnable * 2 + this->normalsEnable * 3);
-	GLfloat *vertices = new GLfloat[length];
-	//GLfloat  vertices[36 * 6];
+	size_t layout = (3 + this->textureEnable * 2 + this->normalsEnable * 3);
+	size_t length = this->size*layout;
 
-	std::string texPath;
+	std::vector<GLfloat> vertices;
+	vertices.resize(length);
+
+	GLfloat *t = vertices.data();
+	//std::string texPath;
 	//bool flag = false;
 	size_t count = 0;
 	uint32_t triangle_flag = 0;
@@ -46,92 +49,73 @@ int GLEngine::__shape::ParseModelFile(std::string &_path)
 		model_file_stream >> in_str;
 	}
 
-	while (!model_file_stream.eof()) {
-		if (this->normalsEnable) {
-			if (vertex_flag < 3)
-			{
-				model_file_stream >> in_str;
-				ptr = &in_str[0];
-				vertices[count] = strtod(ptr, &ptr);
-
-			}
-			count++;
-			vertex_flag++;
-			if (vertex_flag == 6) vertex_flag = 0;
-		}
-		else {
+	while (!model_file_stream.eof() && count < length) {
+		if (vertex_flag < 3)
+		{
 			model_file_stream >> in_str;
 			ptr = &in_str[0];
 			vertices[count] = strtod(ptr, &ptr);
-			count++;
 		}
-			
+		count++;
+		vertex_flag++;
+		if (vertex_flag == layout) vertex_flag = 0;
 	}
 	if (this->normalsEnable)
-	for (count = 0; count < length; count += 18) {
-		vector1 = glm::vec3(vertices[count + 6] - vertices[count], vertices[count + 6 + 1] - vertices[count + 1], vertices[count + 6 + 2] - vertices[count + 2]);
-		vector2 = glm::vec3(vertices[count + 12] - vertices[count], vertices[count + 12 + 1] - vertices[count + 1], vertices[count + 12 + 2] - vertices[count + 2]);
-		normal = glm::normalize(glm::cross(vector1, vector2));
-		vertices[count + 3] = normal.x;
-		vertices[count + 4] = normal.y;
-		vertices[count + 5] = normal.z;
+		for (count = 0; count < length; count += 3 * layout) {
+			vector1 = glm::vec3(vertices[count + layout] - vertices[count], vertices[count + layout + 1] - vertices[count + 1], vertices[count + layout + 2] - vertices[count + 2]);
+			vector2 = glm::vec3(vertices[count + 2 * layout] - vertices[count], vertices[count + 2 * layout + 1] - vertices[count + 1], vertices[count + 2 * layout + 2] - vertices[count + 2]);
+			normal = glm::normalize(glm::cross(vector1, vector2));
 
-		vertices[count + 9] = normal.x;
-		vertices[count + 10] = normal.y;
-		vertices[count + 11] = normal.z;
+			for (int i = 0; i < 3; i++) {
+				vertices[count + i*layout  + 3] = normal.x;
+				vertices[count + i*layout + 4] = normal.y;
+				vertices[count + i*layout + 5] = normal.z;
+			}
+		}
 
-		vertices[count + 15] = normal.x;
-		vertices[count + 16] = normal.y;
-		vertices[count + 17] = normal.z;
-	}
-
-
-
-	if (LOGS::CAN_LOG()) {
-		for (int i = 0; i < length; i+=6) {
-			for (int j = i; j<6+i;j++)
-				LOGS::LOG_STREAM() << vertices[j]<<"\t";
-			LOGS::LOG_STREAM() << std::endl;
+	
+	if (this->textureEnable)
+	{
+		while (in_str.compare("[TexCoords]")) {
+			model_file_stream >> in_str;
+		}
+		count = 1;
+		while (!model_file_stream.eof() && count <= this->size) {
+			for (int j = count*layout - 2; j < count*layout; j++) {
+				model_file_stream >> in_str;
+				ptr = &in_str[0];
+				vertices[j] = strtod(ptr, &ptr);
+			}
+			count++;
 		}
 	}
-		
-
+	
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	glBindVertexArray(this->VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, length * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, length * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
 	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices
+	, GL_STATIC_DRAW);*/
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, layout * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
 
-	if (this->textureEnable && !this->normalsEnable) {
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);
+	if (this->normalsEnable) {
+		glVertexAttribPointer((int)this->normalsEnable, 3, GL_FLOAT, GL_FALSE, layout * sizeof(GLfloat), (GLvoid*)(3* this->normalsEnable * sizeof(GLfloat)));
+		glEnableVertexAttribArray((int)this->normalsEnable);
 	}
-	else if (!this->textureEnable && this->normalsEnable) {
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);
+
+	if (this->textureEnable) {
+		glVertexAttribPointer((int)this->normalsEnable+(int)this->textureEnable, 2, GL_FLOAT, GL_FALSE, layout * sizeof(GLfloat), (GLvoid*)(3*((int)this->normalsEnable + (int)this->textureEnable) * sizeof(GLfloat)));
+		glEnableVertexAttribArray((int)this->normalsEnable + (int)this->textureEnable);
 	}
-	else if (this->textureEnable && this->normalsEnable) {
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(2);
-	}
-	else {
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-	}
+	
+	
 	glBindVertexArray(0);
 
-	//delete[]vertices;
+
 	return 0;
 }
 
@@ -173,7 +157,8 @@ GLEngine::__shape::~__shape()
 
 void GLEngine::__model::SetTexture(const char * _texName)
 {
-	this->texture = createTexture(_texName);
+	if (shapes->textureEnable)
+		this->texture = createTexture(_texName);
 }
 
 
@@ -183,7 +168,7 @@ GLEngine::__model::__model() :shapes(), texture(), color()
 }
 
 
-GLEngine::__model::__model(__shape* _sh, glm::vec3 _color, glm::vec3 _position, textureAtrib _texture) : shapes(_sh), texture(_texture), color(_color), position(_position)
+GLEngine::__model::__model(__shape* _sh,  glm::vec3 _position, glm::vec3 _color, textureAtrib _texture) : shapes(_sh), texture(_texture), color(_color), position(_position)
 {
 }
 

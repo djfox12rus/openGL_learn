@@ -13,6 +13,11 @@ namespace GLEngine {
 
 	void scroll_callback(GLFWwindow* _window, double _xoffset, double _yoffset);
 
+	inline float& acceleration() {
+		static float var = 1.0;		 
+		return var>50.0? var=50.0:var;
+	}
+
 	void do_movement();
 
 	void do_rotation();

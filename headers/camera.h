@@ -50,7 +50,7 @@ namespace GLEngine {
 		~__camera();
 
 		glm::mat4 GetViewMatrix();
-		void ProcessKeyboard(Camera_Movement _direction, GLfloat _deltaTime);
+		void ProcessKeyboard(Camera_Movement _direction, GLfloat _deltaTime, float _accelaration = 1.0);
 		void ProcessMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLboolean _constrainPitch = true);
 		void ProcessMouseScroll(GLfloat _yoffset);
 	};

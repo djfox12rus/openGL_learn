@@ -4,6 +4,7 @@
 #include "OpenGLheader.h"
 #include "callbacks.h"
 #include "models.h"
+#include "test_vec_mat.h"
 namespace GLEngine {
 
 	GLFWwindow* InitWindow();

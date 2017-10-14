@@ -52,9 +52,10 @@ glm::mat4 GLEngine::__camera::GetViewMatrix()
 	return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
 }
 
-void GLEngine::__camera::ProcessKeyboard(Camera_Movement _direction, GLfloat _deltaTime)
+void GLEngine::__camera::ProcessKeyboard(Camera_Movement _direction, GLfloat _deltaTime, float _accelaration)
 {
-	GLfloat velocity = this->MovementSpeed * _deltaTime;
+	
+	GLfloat velocity = this->MovementSpeed * _deltaTime*_accelaration;
 	if (_direction == FORWARD)
 		this->Position += this->Front * velocity;
 	if (_direction == BACKWARD)

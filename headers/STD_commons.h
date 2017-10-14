@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 #include <stdint.h>
 #include <ctime>
 #include<time.h>

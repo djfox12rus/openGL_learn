@@ -202,6 +202,16 @@ void GLEngine::Shader::setVec3(const std::string & name, glm::vec3& value) const
 	glUniform3f(glGetUniformLocation(program, name.c_str()), value.x, value.y,value.z);
 }
 
+void GLEngine::Shader::setVec4(const std::string & name, glm::vec4 & value) const
+{
+	glUniform4f(glGetUniformLocation(program, name.c_str()), value.x, value.y, value.z, value.w);
+}
+
+void GLEngine::Shader::setMat3(const std::string & name, glm::mat3 & value, GLsizei count, GLboolean transpose) const
+{
+	glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()), count, transpose, glm::value_ptr(value));
+}
+
 void GLEngine::Shader::setMat4(const std::string & name, glm::mat4 & value, GLsizei count, GLboolean transpose) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), count, transpose, glm::value_ptr(value));
@@ -252,6 +262,10 @@ GLEngine::Material::Material(glm::vec3 &_amb, glm::vec3 &_diff, glm::vec3 &_spec
 {
 }
 
-GLEngine::Light::Light(glm::vec3 &_amb, glm::vec3 &_diff, glm::vec3 &_spec): ambient(_amb), diffuse(_diff), specular(_spec)
+GLEngine::Light::Light(glm::vec3 &_amb, glm::vec3 &_diff, glm::vec3 &_spec): ambient(_amb), diffuse(_diff), specular(_spec), constant(), linear(), quadratic(), cutOff()
+{
+}
+
+GLEngine::Light::Light(glm::vec3 & _amb, glm::vec3 & _diff, glm::vec3 & _spec, float _linear, float _quadratic, float _cutOff, float _outerCutOff, float _constant):ambient(_amb), diffuse(_diff), specular(_spec), constant(_constant), linear(_linear), quadratic(_quadratic), cutOff(_cutOff),outerCutOff(_outerCutOff)
 {
 }
