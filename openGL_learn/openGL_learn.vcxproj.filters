@@ -42,6 +42,9 @@
     <ClCompile Include="..\src\test_vec_mat.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mesh.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\headers\STD_commons.h">
@@ -72,6 +75,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\headers\test_vec_mat.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\headers\mesh.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

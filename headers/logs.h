@@ -8,11 +8,8 @@ namespace LOGS {
 		return _test;
 	}
 
-	
-
-
-	inline std::wofstream& LOG_STREAM() {
-		static std::wofstream LOG;
+	inline std::ofstream& LOG_STREAM() {
+		static std::ofstream LOG;
 		return LOG;
 	}
 

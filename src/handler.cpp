@@ -60,38 +60,14 @@ int GLEngine::Main_loop()
 	Shader lampShader = Shader("[LampShader]");
 
 	__shape cube = __shape("[ShapeCube]");
-
-	textureAtrib crateTex = createTexture("[CrateTexture]");;
-
-	//__model crate = __model(&cube, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(1.0f, 0.5f, 0.31f));
 	__model lamp = __model(&cube, glm::vec3(2.5f, 0.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	__model crates[] = {
-		__model(&cube, glm::vec3(0.0f, 0.0f, -4.0f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(2.0f,  5.0f, -15.0f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-1.5f, -2.2f, -2.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-3.8f, -2.0f, -12.3f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(3.4f, -0.4f, -3.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-1.7f,  3.0f, -7.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(1.3f, -2.0f, -2.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(1.5f,  2.0f, -2.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(1.5f,  0.2f, -1.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-1.3f,  1.0f, -1.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(0.0f, 1.0f, 3.0f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(2.0f,  5.0f, -10.0f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-1.5f, -7.2f, -1.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-4.8f, -2.0f, 5.3f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(8.4f, -7.4f, -3.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-1.7f,  3.0f, 7.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(1.3f, 2.0f, 2.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(2.5f,  5.0f, -3.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(2.5f,  -4.2f, -2.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-		__model(&cube, glm::vec3(-3.3f,  2.0f, 1.5f),glm::vec3(1.0f, 0.5f, 0.31f), crateTex),
-	};
+	Model nanosuit = Model("[nanosuitMod]");
+
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
-	textureAtrib specMap = createTexture("[SpecMap]");
+	
 	Material mater = Material(glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.5f, 0.5f, 0.5f), 32.0f);
 
 	/*Light movinglight = Light(glm::vec3(0.05f), glm::vec3(0.7f), glm::vec3(1.0f), 0.09f, 0.032f, 0.0f, 0.0f);
@@ -111,6 +87,8 @@ int GLEngine::Main_loop()
 
 	std::string uniformName, tempName;
 	glEnable(GL_DEPTH_TEST);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (!glfwWindowShouldClose(Window()))
 	{
 		deltaTime().setDelta();
@@ -126,8 +104,8 @@ int GLEngine::Main_loop()
 
 			pointLightPositions[0] = glm::vec3(-10.0 + 12.0f*glm::cos(0.5*deltaTime().lastFrame), 0.0f, -4.0f - 4.0f*glm::sin(0.5*deltaTime().lastFrame));
 			pointLightPositions[1] = glm::vec3(0.0f, -10.0 + 12.0f*glm::sin(0.5*deltaTime().lastFrame), -4.0f + 4.0f*glm::cos(0.5*deltaTime().lastFrame));
-			pointLightPositions[2] = glm::vec3(-4.0f + 12.0f*glm::sin(deltaTime().lastFrame), 2.0f, -8.0f);
-			pointLightPositions[3] = glm::vec3(0.0f + 12.0f*glm::cos(deltaTime().lastFrame), 0.0f, 7.0f);
+			pointLightPositions[2] = glm::vec3(-4.0f + 12.0f*glm::sin(deltaTime().lastFrame), 2.0f, -6.0f);
+			pointLightPositions[3] = glm::vec3(0.0f + 12.0f*glm::cos(deltaTime().lastFrame), 0.0f, 2.0f);
 
 			lightingShader.Use();
 			lightingShader.setMat4("view", view);
@@ -136,12 +114,9 @@ int GLEngine::Main_loop()
 
 			lightingShader.setInt("material.diffuse", 0);
 			lightingShader.setInt("material.specular", 1);
-			lightingShader.setFloat("material.shininess", 32.0f);
+			lightingShader.setFloat("material.shininess", 16.0f);
 
-			glActiveTexture(crateTex.GL_sampler);
-			glBindTexture(GL_TEXTURE_2D, crateTex.texture);
-			glActiveTexture(specMap.GL_sampler);
-			glBindTexture(GL_TEXTURE_2D, specMap.texture);
+			
 			//общий свет
 			lightingShader.setVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 			if (!keys()[GLFW_KEY_H]) {
@@ -150,8 +125,8 @@ int GLEngine::Main_loop()
 				lightingShader.setVec3("dirLight.specular", glm::vec3());
 			}
 			else {
-				lightingShader.setVec3("dirLight.ambient", glm::vec3(0.2f));
-				lightingShader.setVec3("dirLight.diffuse", glm::vec3(0.5f));
+				lightingShader.setVec3("dirLight.ambient", glm::vec3(0.1f));
+				lightingShader.setVec3("dirLight.diffuse", glm::vec3(0.3f));
 				lightingShader.setVec3("dirLight.specular", glm::vec3(1.0f));
 			}
 			//фонарик
@@ -193,7 +168,7 @@ int GLEngine::Main_loop()
 					lightingShader.setVec3(tempName.c_str(), glm::vec3(0.05f));
 					tempName = uniformName;
 					tempName.append("diffuse");
-					lightingShader.setVec3(tempName.c_str(), glm::vec3(0.7f));
+					lightingShader.setVec3(tempName.c_str(), glm::vec3(0.5f));
 					tempName = uniformName;
 					tempName.append("specular");
 					lightingShader.setVec3(tempName.c_str(), glm::vec3(1.0f));
@@ -229,20 +204,15 @@ int GLEngine::Main_loop()
 				}
 			}
 
-			glBindVertexArray(crates[0].VAO());
-			for (unsigned int i = 0; i < 20; i++)
-			{
 
-				model = glm::mat4();
-				model = glm::translate(model, crates[i].position);
-				model = model* RotatingCube();
-				float angle = 20.0f * i;
-				model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-				lightingShader.setMat4("model", model);
-				lightingShader.setMat3("matrix_normals", glm::inverse(glm::mat3(model)), 1, GL_TRUE);
-				glDrawArrays(GL_TRIANGLES, 0, crates[i].VerticesNum());
-			}
-			glBindVertexArray(0);
+			model = glm::mat4();
+			model = glm::translate(model, glm::vec3(0.0f, -1.75f, -4.0f));
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+			lightingShader.setMat4("model", model);
+			lightingShader.setMat3("matrix_normals", glm::inverse(glm::mat3(model)), 1, GL_TRUE);
+
+
+			nanosuit.Draw(lightingShader);
 			
 			lampShader.Use();
 			lampShader.setVec3("modelColor", lamp.color);

@@ -70,7 +70,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\FOX\Source\libs\glm;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\src;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\include;C:\Users\FOX\Source\GLFWlib\glfw-3.2.1\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\FOX\Source\GLFWlib\assimp-3.3.1\include;C:\Users\FOX\Source\libs\glm;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\src;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\include;C:\Users\FOX\Source\GLFWlib\glfw-3.2.1\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,7 +82,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Users\FOX\Source\GLFWlib\GLFW_build\src\Debug\glfw3.lib;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\projects\VC9\Debug\SOIL.lib;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\lib\Release\Win32\glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Users\FOX\Source\GLFWlib\GLFW_build\src\Debug\glfw3.lib;C:\Users\FOX\Source\libs\Simple OpenGL Image Library\projects\VC9\Debug\SOIL.lib;C:\Users\FOX\Source\GLFWlib\glew-2.1.0\lib\Release\Win32\glew32s.lib;C:\Users\FOX\Source\GLFWlib\Assimp_build\code\Debug\assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,6 +103,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>C:\Users\FOX\Source\GLFWlib\Assimp_build\code\Debug\assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>assimp-vc140-mt.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,6 +127,7 @@
     <ClCompile Include="..\src\handler.cpp" />
     <ClCompile Include="..\src\logs.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\models.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
     <ClCompile Include="..\src\test_vec_mat.cpp" />
@@ -132,6 +138,7 @@
     <ClInclude Include="..\headers\GLClasses.h" />
     <ClInclude Include="..\headers\handler.h" />
     <ClInclude Include="..\headers\logs.h" />
+    <ClInclude Include="..\headers\mesh.h" />
     <ClInclude Include="..\headers\models.h" />
     <ClInclude Include="..\headers\OpenGLheader.h" />
     <ClInclude Include="..\headers\settings.h" />
