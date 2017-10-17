@@ -62,6 +62,10 @@ int GLEngine::Main_loop()
 	__shape cube = __shape("[ShapeCube]");
 	__model lamp = __model(&cube, glm::vec3(2.5f, 0.0f, -3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
+	__shape plane = __shape("[ShapeFloor]");
+	__model floor = __model(&plane);
+	floor.SetTexture("[FloorTexture]");
+
 	Model nanosuit = Model("[nanosuitMod]");
 
 	glm::mat4 model;
@@ -92,12 +96,13 @@ int GLEngine::Main_loop()
 	while (!glfwWindowShouldClose(Window()))
 	{
 		deltaTime().setDelta();
-
+		GLfloat Frame = glfwGetTime();
 		glfwPollEvents();
 		do_movement();
 		do_rotation();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		{
 			view = Camera().GetViewMatrix();
 			projection = glm::perspective(glm::radians(Camera().Zoom), Screen().AspectRatio, 0.1f, 1000.0f);
@@ -115,7 +120,7 @@ int GLEngine::Main_loop()
 			lightingShader.setInt("material.diffuse", 0);
 			lightingShader.setInt("material.specular", 1);
 			lightingShader.setFloat("material.shininess", 16.0f);
-
+			
 			
 			//общий свет
 			lightingShader.setVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -129,6 +134,9 @@ int GLEngine::Main_loop()
 				lightingShader.setVec3("dirLight.diffuse", glm::vec3(0.3f));
 				lightingShader.setVec3("dirLight.specular", glm::vec3(1.0f));
 			}
+
+
+			
 			//фонарик
 			if (keys()[GLFW_KEY_F]) {
 				lightingShader.setVec3("spotLight.ambient", glm::vec3(0.05f));
@@ -155,6 +163,7 @@ int GLEngine::Main_loop()
 				lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
 			}
 
+			
 			for (int i = 0; i < 4; i++) {
 				uniformName = "pointLights[";
 				uniformName.append(std::to_string(i));
@@ -204,13 +213,27 @@ int GLEngine::Main_loop()
 				}
 			}
 
+			lightingShader.setInt("material.texture_diffuse1",0);
+			//lightingShader.setInt("material.texture_specular1", i);
 
+			lightingShader.setFloat("material.shininess", 8.0f);
+
+			glActiveTexture(floor.Texture().GL_sampler);
+			glBindTexture(GL_TEXTURE_2D, floor.Texture().texture);
+
+			glBindVertexArray(floor.VAO());
 			model = glm::mat4();
-			model = glm::translate(model, glm::vec3(0.0f, -1.75f, -4.0f));
+			lightingShader.setMat4("model", model);
+			lightingShader.setMat3("matrix_normals", glm::inverse(glm::mat3(model)), 1, GL_TRUE);
+			glDrawArrays(GL_TRIANGLES, 0, floor.VerticesNum());
+			glBindVertexArray(0);
+
+
+			model = glm::translate(model, glm::vec3(0.0f, -2.0f, -4.0f));
 			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 			lightingShader.setMat4("model", model);
 			lightingShader.setMat3("matrix_normals", glm::inverse(glm::mat3(model)), 1, GL_TRUE);
-
+			
 
 			nanosuit.Draw(lightingShader);
 			
@@ -231,10 +254,15 @@ int GLEngine::Main_loop()
 			}			
 			glBindVertexArray(0);		
 
+			
+
 			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		
+
 		glfwSwapBuffers(Window());
+		
 	}
 	return 0;
 }

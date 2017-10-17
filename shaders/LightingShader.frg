@@ -125,19 +125,17 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
 }
 
 vec3 DiffuseTextureMixing(){
-	vec3 mixing = vec3(texture(material.texture_diffuse1, TexCoords));
-	mixing+=vec3(texture(material.texture_diffuse2, TexCoords));
-	mixing+=vec3(texture(material.texture_diffuse3, TexCoords));
-	mixing+=vec3(texture(material.texture_diffuse4, TexCoords));
-	mixing+=vec3(texture(material.texture_diffuse5, TexCoords));
-	return mixing;
+	vec4 mixing = mix(texture(material.texture_diffuse1, TexCoords),texture(material.texture_diffuse2, TexCoords),0.5);
+	mixing = mix(mixing,texture(material.texture_diffuse3, TexCoords),0.3333);
+	mixing = mix(mixing,texture(material.texture_diffuse4, TexCoords),0.25);
+	mixing = mix(mixing,texture(material.texture_diffuse5, TexCoords),0.2);	
+	return vec3(mixing);
 }
 
-vec3 SpecularTextureMixing(){
-	vec3 mixing = vec3(texture(material.texture_specular1, TexCoords));
-	mixing+=vec3(texture(material.texture_specular2, TexCoords));
-	mixing+=vec3(texture(material.texture_specular3, TexCoords));
-	mixing+=vec3(texture(material.texture_specular4, TexCoords));
-	mixing+=vec3(texture(material.texture_specular5, TexCoords));
-	return mixing;
+vec3 SpecularTextureMixing(){	
+	vec4 mixing = mix(texture(material.texture_specular1, TexCoords),texture(material.texture_specular2, TexCoords),0.5);
+	mixing = mix(mixing,texture(material.texture_specular3, TexCoords),0.3333);
+	mixing = mix(mixing,texture(material.texture_specular4, TexCoords),0.25);
+	mixing = mix(mixing,texture(material.texture_specular5, TexCoords),0.2);	
+	return vec3(mixing);	
 }
