@@ -65,7 +65,7 @@ int Settings::SettingsFileHandler::ReadWidthHeightTitle(int & _w, int & _h, std:
 	return 0;
 }
 
-int Settings::SettingsFileHandler::ReadShadersPaths(const char * _shader_name, std::string &_vertexPath, std::string &_fragmentPath)
+bool Settings::SettingsFileHandler::ReadShadersPaths(std::string &_dir)
 {
 	if (!file_stream.is_open())
 		return -1;	
@@ -74,15 +74,13 @@ int Settings::SettingsFileHandler::ReadShadersPaths(const char * _shader_name, s
 	while (!file_stream.eof()) {
 		
 		file_stream >> str;
-		if (!str.compare(_shader_name)) {
-			file_stream >> _vertexPath;
-			file_stream >> _fragmentPath;			
+		if (!str.compare("[ShadersPath]")) {
+			file_stream >> _dir;				
 			found = true;
 			break;
 		}
-	}
-	if (!found)return -1;
-	return 0;
+	}	
+	return found;
 }
 
 std::string Settings::SettingsFileHandler::ReadPathTo(const char * _model_name)

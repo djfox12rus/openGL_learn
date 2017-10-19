@@ -15,7 +15,7 @@ namespace GLEngine {
 
 	inline float& acceleration() {
 		static float var = 1.0;		 
-		return var>50.0? var=50.0:var;
+		return var;
 	}
 
 	void do_movement();

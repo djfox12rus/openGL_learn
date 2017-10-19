@@ -125,11 +125,12 @@
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\GLClasses.cpp" />
     <ClCompile Include="..\src\handler.cpp" />
+    <ClCompile Include="..\src\lights.cpp" />
     <ClCompile Include="..\src\logs.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
-    <ClCompile Include="..\src\models.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
+    <ClCompile Include="..\src\shaders.cpp" />
     <ClCompile Include="..\src\test_vec_mat.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,11 +138,12 @@
     <ClInclude Include="..\headers\camera.h" />
     <ClInclude Include="..\headers\GLClasses.h" />
     <ClInclude Include="..\headers\handler.h" />
+    <ClInclude Include="..\headers\lights.h" />
     <ClInclude Include="..\headers\logs.h" />
     <ClInclude Include="..\headers\mesh.h" />
-    <ClInclude Include="..\headers\models.h" />
     <ClInclude Include="..\headers\OpenGLheader.h" />
     <ClInclude Include="..\headers\settings.h" />
+    <ClInclude Include="..\headers\shaders.h" />
     <ClInclude Include="..\headers\STD_commons.h" />
     <ClInclude Include="..\headers\test_vec_mat.h" />
   </ItemGroup>

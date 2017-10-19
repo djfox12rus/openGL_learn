@@ -3,6 +3,7 @@
 #define GLCLASSES_H
 #include "OpenGLheader.h"
 #include "camera.h"
+#include "shaders.h"
 
 namespace GLEngine {
 	struct __screen {
@@ -47,27 +48,7 @@ namespace GLEngine {
 		static __keys var;
 		return var;
 	}
-
-	class Shader
-	{
-	private:			
-		Shader();
-	public:		
-		GLuint program;
-		Shader(const char* _shader_name);
-		~Shader();
-		void Use();
-		void setBool(const std::string &name, bool value) const;
-		void setInt(const std::string &name, int value) const;
-		void setFloat(const std::string &name, float value) const;
-		void setVec3(const std::string &name, glm::vec3& value) const;
-		void setVec4(const std::string &name, glm::vec4& value) const;
-		void setMat3(const std::string &name, glm::mat3& value, GLsizei count = 1, GLboolean transpose = GL_FALSE) const;
-		void setMat4(const std::string &name, glm::mat4& value, GLsizei count = 1, GLboolean transpose = GL_FALSE) const;
-
-		
-	};
-
+	
 	struct __mouse_pos {
 		GLfloat x;
 		GLfloat y;
@@ -106,13 +87,13 @@ namespace GLEngine {
 		return r;
 	}
 
-	struct Material {
+	/*struct Material {
 		glm::vec3 ambient;
 		glm::vec3 diffuse;
 		glm::vec3 specular;
 		float shininess;
 		Material(glm::vec3&, glm::vec3&, glm::vec3&,float);
-	};
+	};*/
 
 	struct Light {		
 		glm::vec3 ambient;

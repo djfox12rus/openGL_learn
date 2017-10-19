@@ -54,5 +54,44 @@ namespace GLEngine {
 		}
 		return 0;
 	}
+
+	inline void logErrors(std::string& _func_name)
+	{
+		if (!LOGS::CAN_LOG())return;
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR)
+		{
+			LOGS::LOG_STREAM() << _func_name<< std::endl;
+			switch (err) {
+			case GL_INVALID_ENUM:
+				LOGS::LOG_STREAM() << "ERROR::GL_INVALID_ENUM" << std::endl;
+				break;
+			case GL_INVALID_VALUE:
+				LOGS::LOG_STREAM() << "ERROR::GL_INVALID_VALUE" << std::endl;
+				break;
+			case GL_INVALID_OPERATION:
+				LOGS::LOG_STREAM() << "ERROR::GL_INVALID_OPERATION" << std::endl;
+				break;
+			case GL_STACK_OVERFLOW:
+				LOGS::LOG_STREAM() << "ERROR::GL_STACK_OVERFLOW" << std::endl;
+				break;
+			case GL_STACK_UNDERFLOW:
+				LOGS::LOG_STREAM() << "ERROR::GL_STACK_UNDERFLOW" << std::endl;
+				break;
+			case GL_OUT_OF_MEMORY:
+				LOGS::LOG_STREAM() << "ERROR::GL_OUT_OF_MEMORY" << std::endl;
+				break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				LOGS::LOG_STREAM() << "ERROR::GL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+				break;
+			case GL_CONTEXT_LOST:
+				LOGS::LOG_STREAM() << "ERROR::GL_CONTEXT_LOST" << std::endl;
+				break;
+			default:
+				LOGS::LOG_STREAM() << "ERROR::UNKNOWN_ERROR" << std::endl;
+				break;
+			}
+		}
+	}
 }
 #endif // !GLHEADER_H

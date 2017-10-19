@@ -2,6 +2,8 @@
 #ifndef MESH_H
 #define MESH_H
 
+
+
 #include "GLClasses.h"
 
 namespace GLEngine {
@@ -16,26 +18,43 @@ namespace GLEngine {
 	};
 
 	struct Texture {
-		uint32_t id;
-		std::string type;
+		uint32_t id;		
 		aiString path;
 	};
 
+	struct Material {
+		std::vector<Texture>texture_diffuse;
+		std::vector<Texture>texture_specular;
+		float shininess;
+		Material() :
+			texture_diffuse()
+			, texture_specular()
+			, shininess()
+		{}
+		Material(Material&_m) :
+			texture_diffuse(_m.texture_diffuse)
+			, texture_specular(_m.texture_specular)
+			, shininess(_m.shininess)
+		{}
+
+	};
+
 	class Mesh {
-	private:		
-		uint32_t VAO, VBO, EBO;		
+	private:
+		uint32_t VAO, VBO, EBO;
 		void setupMesh();
-	public:		
+	public:
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
-		std::vector<Texture> textures;
-		
+		Material material;
+
 		Mesh();
-		Mesh(std::vector<Vertex>& _vertices, std::vector<unsigned int>& _indices, std::vector<Texture>& _textures);
+		~Mesh();
+		Mesh(std::vector<Vertex>& _vertices, std::vector<unsigned int>& _indices, Material& _material);
 		void Draw(const Shader & _shader);
-	
+
 	};
-	
+
 	class Model
 	{
 	private:
@@ -47,7 +66,8 @@ namespace GLEngine {
 		void loadModel(std::string & _path);
 		void processNode(aiNode *_node, const aiScene *_scene);
 		Mesh processMesh(aiMesh *_mesh, const aiScene *_scene);
-		std::vector<Texture> loadMaterialTextures(aiMaterial *_mat, aiTextureType _type, std::string _typeName);
+		GLEngine::Material loadMaterial(aiMaterial *_mat);
+		std::vector<Texture> loadMaterialTextures(aiMaterial *_mat, aiTextureType _type);
 	public:
 		/*  Functions   */
 		Model(const char *_name);

@@ -38,8 +38,8 @@ void GLEngine::scroll_callback(GLFWwindow * _window, double _xoffset, double _yo
 
 void GLEngine::do_movement()
 {	
-	if (keys()[GLFW_KEY_SPACE]) {
-		acceleration() += 0.1;
+	if (keys()[GLFW_KEY_LEFT_SHIFT]) {
+		acceleration() = 5.0;
 	}
 	else {
 		acceleration() = 1.0;
@@ -52,7 +52,7 @@ void GLEngine::do_movement()
 		Camera().ProcessKeyboard(LEFT, deltaTime(), acceleration());
 	if (keys()[GLFW_KEY_D])
 		Camera().ProcessKeyboard(RIGHT, deltaTime(), acceleration());
-	if (keys()[GLFW_KEY_LEFT_SHIFT])
+	if (keys()[GLFW_KEY_SPACE])
 		Camera().ProcessKeyboard(UP, deltaTime(), acceleration());
 	if (keys()[GLFW_KEY_LEFT_CONTROL])
 		Camera().ProcessKeyboard(DOWN, deltaTime(), acceleration());

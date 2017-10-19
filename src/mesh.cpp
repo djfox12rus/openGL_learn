@@ -25,11 +25,30 @@ void GLEngine::Mesh::setupMesh()
 	glBindVertexArray(0);
 }
 
-GLEngine::Mesh::Mesh() :VAO(), VBO(), EBO(), vertices(), indices(), textures()
+GLEngine::Mesh::Mesh() :
+	VAO()
+	, VBO()
+	, EBO()
+	, vertices()
+	, indices()
+	, material()
 {
 }
 
-GLEngine::Mesh::Mesh(std::vector<Vertex>& _vertices, std::vector<unsigned int>& _indices, std::vector<Texture>& _textures):VAO(), VBO(), EBO(), vertices(_vertices), indices(_indices), textures(_textures)
+GLEngine::Mesh::~Mesh()
+{
+	/*glDeleteVertexArrays(1, &this->VAO);
+	glDeleteBuffers(1, &this->VBO);
+	glDeleteBuffers(1, &this->EBO);*/
+}
+
+GLEngine::Mesh::Mesh(std::vector<Vertex>& _vertices, std::vector<unsigned int>& _indices, Material& _material):
+	VAO()
+	, VBO()
+	, EBO()
+	, vertices(_vertices)
+	, indices(_indices)
+	, material(_material)
 {
 	setupMesh();
 }
@@ -40,34 +59,30 @@ void GLEngine::Mesh::Draw(const Shader& _shader)
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 	string temp;
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i);		
-		string number;
-		string name = textures[i].type;
-		if (!name.compare("texture_diffuse")) {
-			number.assign(to_string(diffuseNr++));
-		}
-		else if (!name.compare("texture_specular")) {
-			number.assign(to_string(specularNr++));
-		}		
-		//"material.texture_diffuse#" или "material.texture_specular#", # - нумерация текстур.
-		temp.assign("material.");
-		temp.append(name);
+	string number;	
+	for (unsigned int i = 0; i < this->material.texture_diffuse.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);							
+		number.assign(to_string(diffuseNr++));		
+		temp.assign("material.texture_diffuse");		
 		temp.append(number);
-		/*if (LOGS::CAN_LOG()) {
-			LOGS::LOG_STREAM() << "Texture used: " << temp<<" for VAO = "<< VAO << std::endl;
-		}*/
-		_shader.setInt(temp.c_str(), i);
-
-		_shader.setFloat("material.shininess", 32.0f);
-
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-				
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-
+		_shader.setInt(temp.c_str(), i);		
+		glBindTexture(GL_TEXTURE_2D, material.texture_diffuse[i].id);		
 	}
+	for (unsigned int i = 0; i < this->material.texture_specular.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i + this->material.texture_diffuse.size());
+		number.assign(to_string(specularNr++));
+		temp.assign("material.texture_specular");
+		temp.append(number);
+		_shader.setInt(temp.c_str(), i + this->material.texture_diffuse.size());
+		glBindTexture(GL_TEXTURE_2D, material.texture_specular[i].id);
+	}
+	_shader.setFloat("material.shininess", material.shininess);
+	GLEngine::logErrors(std::string("GLEngine::Mesh::Draw"));
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void GLEngine::Model::loadModel(std::string & _path)
@@ -81,8 +96,7 @@ void GLEngine::Model::loadModel(std::string & _path)
 		}
 		return;
 	}
-	directory = _path.substr(0, _path.find_last_of('/'));
-
+	this->directory = _path.substr(0, _path.find_last_of('/'));
 	processNode(scene->mRootNode, scene);
 }
 
@@ -130,21 +144,38 @@ GLEngine::Mesh GLEngine::Model::processMesh(aiMesh * _mesh, const aiScene * _sce
 			indices.push_back(face.mIndices[j]);
 	}
 
+	Material material;
 	if (_mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial *material = _scene->mMaterials[_mesh->mMaterialIndex];
-		vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-
+	{		
+		material = loadMaterial(_scene->mMaterials[_mesh->mMaterialIndex]);
+		if (LOGS::CAN_LOG()) {
+			LOGS::LOG_STREAM() << "Material loaded: " << std::endl;
+			for (int i = 0; i < material.texture_diffuse.size(); i++) {
+				LOGS::LOG_STREAM() << "DIff: "<< material.texture_diffuse[i].path.C_Str() << std::endl;
+			}
+			for (int i = 0; i < material.texture_specular.size(); i++) {
+				LOGS::LOG_STREAM() << "Spec: "<< material.texture_specular[i].path.C_Str() << std::endl;
+			}
+			LOGS::LOG_STREAM() <<"Shiny: "<< material.shininess << std::endl;
+		}
 	}
-
-	return Mesh(vertices, indices, textures);
+	
+	return Mesh(vertices, indices, material);
 }
 
-std::vector<GLEngine::Texture> GLEngine::Model::loadMaterialTextures(aiMaterial * _mat, aiTextureType _type, std::string _typeName)
+GLEngine::Material GLEngine::Model::loadMaterial(aiMaterial * _mat)
+{
+	using namespace std;
+	Material material;	
+	vector<Texture> diffuseMaps = loadMaterialTextures(_mat, aiTextureType_DIFFUSE);
+	material.texture_diffuse.insert(material.texture_diffuse.end(), diffuseMaps.begin(), diffuseMaps.end());
+	vector<Texture> specularMaps = loadMaterialTextures(_mat, aiTextureType_SPECULAR);
+	material.texture_specular.insert(material.texture_specular.end(), specularMaps.begin(), specularMaps.end());
+	_mat->Get(AI_MATKEY_SHININESS, material.shininess);
+	return material;
+}
+
+std::vector<GLEngine::Texture> GLEngine::Model::loadMaterialTextures(aiMaterial * _mat, aiTextureType _type)
 {
 	using namespace std;
 	vector<Texture> textures;
@@ -165,14 +196,14 @@ std::vector<GLEngine::Texture> GLEngine::Model::loadMaterialTextures(aiMaterial 
 				break;
 			}
 		}
-
-		texture = Texture();
-		texture.id = TextureFromFile(string(str.C_Str()), directory);
-		texture.type = _typeName;
-		texture.path = str;
-		textures.push_back(texture);
-		textures_loaded.push_back(texture);
-	}
+		if (!skip) {
+			texture = Texture();
+			texture.id = TextureFromFile(string(str.C_Str()), directory);
+			texture.path = str;
+			textures.push_back(texture);
+			textures_loaded.push_back(texture);
+		}
+	}	
 	return textures;
 }
 
@@ -229,3 +260,4 @@ uint32_t GLEngine::TextureFromFile(std::string & path, const std::string & direc
 
 	return textureID;
 }
+

@@ -19,7 +19,7 @@ namespace GLEngine {
 	const GLfloat YAW = -90.0f;
 	const GLfloat PITCH = 0.0f;
 	const GLfloat ROLL = 0.0f;
-	const GLfloat SPEED = 3.0f;
+	const GLfloat SPEED = 20.0f;
 	const GLfloat SENSITIVTY = 0.05f;
 	const GLfloat ZOOM = 45.0f;
 
@@ -55,6 +55,7 @@ namespace GLEngine {
 		void ProcessMouseScroll(GLfloat _yoffset);
 	};
 
+	//Default Camera.
 	inline __camera& Camera() {
 		static __camera cam = __camera(glm::vec3(0.0f, 0.0f, 3.0f));
 		return cam;

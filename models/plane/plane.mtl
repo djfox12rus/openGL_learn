@@ -1,0 +1,13 @@
+# Blender MTL File: 'plane.blend'
+# Material Count: 1
+
+newmtl brass
+Ns 96.078431
+Ka 0.329412 0.223529 0.027451
+Kd 0.624314 0.454902 0.090980
+Ks 0.198431 0.188235 0.161569
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd soil_ground_0087_01.jpg

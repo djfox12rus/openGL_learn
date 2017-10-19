@@ -4,7 +4,7 @@
 #include "OpenGLheader.h"
 #include "callbacks.h"
 #include "mesh.h"
-#include "models.h"
+
 namespace GLEngine {
 
 	GLFWwindow* InitWindow();
@@ -14,6 +14,7 @@ namespace GLEngine {
 	}
 
 	int Handler();
+	
 
 	int Main_loop();
 }
